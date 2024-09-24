@@ -1,11 +1,9 @@
 import {
   type EffectScope,
-  type ShallowRef,
+  type Signal,
   effectScope,
-  isReactive,
-  shallowRef,
-  triggerRef,
-} from '@vue/reactivity'
+  signal,
+} from '@johnsoncodehk/signals'
 import { isArray, isObject, isString } from '@vue/shared'
 import {
   createComment,
@@ -24,9 +22,9 @@ import { withMemo } from './memo'
 interface ForBlock extends Fragment {
   scope: EffectScope
   state: [
-    item: ShallowRef<any>,
-    key: ShallowRef<any>,
-    index: ShallowRef<number | undefined>,
+    item: Signal<any>,
+    key: Signal<any>,
+    index: Signal<number | undefined>,
   ]
   key: any
   memo: any[] | undefined
@@ -253,9 +251,9 @@ export const createFor = (
 
     const [item, key, index] = getItem(source, idx)
     const state = [
-      shallowRef(item),
-      shallowRef(key),
-      shallowRef(index),
+      signal(item),
+      signal(key),
+      signal(index),
     ] as ForBlock['state']
     const block: ForBlock = (newBlocks[idx] = {
       nodes: null!, // set later
@@ -330,7 +328,7 @@ export const createFor = (
       newKey !== key.value ||
       newIndex !== index.value ||
       // shallowRef list
-      (isObject(newItem) && !isReactive(newItem))
+      (isObject(newItem) && true)
     if (needsUpdate) updateState(block, newItem, newKey, newIndex)
   }
 
@@ -347,14 +345,9 @@ function updateState(
   newIndex: number | undefined,
 ) {
   const [item, key, index] = block.state
-  const oldItem = item.value
   item.value = newItem
   key.value = newKey
   index.value = newIndex
-
-  if (oldItem === newItem && !isReactive(oldItem)) {
-    triggerRef(item)
-  }
 }
 
 export function createForSlots(

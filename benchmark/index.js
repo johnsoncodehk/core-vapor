@@ -130,7 +130,7 @@ async function buildApp(isVapor) {
     colors.blue(`\nBuilding ${isVapor ? 'Vapor' : 'Virtual DOM'} app...\n`),
   )
 
-  process.env.NODE_ENV = 'production'
+  if (!devBuild) process.env.NODE_ENV = 'production'
   const CompilerSFC = await import(
     '../packages/compiler-sfc/dist/compiler-sfc.cjs.js'
   )
